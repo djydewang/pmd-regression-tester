@@ -1,0 +1,5 @@
+# The standard projects list
+# Format:
+# REPOSITORY_NAME|[git|hg]|REPOSITORY_URI|[COMMIT_ID]|[EXCLUDE PATTERN]
+
+pmd|git|https://github.com/pmd/pmd|pmd_releases/6.0.0||

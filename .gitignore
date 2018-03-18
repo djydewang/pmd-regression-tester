@@ -1,0 +1,6 @@
+#The directory used to store the downloaded standard projects.
+repositories/
+
+#The directory used to store the reports.
+reports/
+

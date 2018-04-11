@@ -5,14 +5,10 @@
 
 pwd=$PWD
 #The directory used to store downloaded projects.
-if [ ! -d ../repositories ]; then
-	mkdir ../repositories
-fi
+mkdir ../repositories
 
 #The directory used to store the diff reports.
-if [ ! -d ../reports ]; then
-	mkdir ../reports
-fi
+mkdir ../reports
 
 #Demo to get repositories
 function getRepositories() {
@@ -21,31 +17,25 @@ function getRepositories() {
 	fi
 }
 
+#Demo to generate pmd reports
 function generateReport() {
-	./mvnw clean install -Dpmd.skip=ture
+	./mvnw clean verify -Dmaven.pmd.skip=true
 	VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.5.0:exec | tail -1)
 	cd pmd-dist/target
 	unzip -oq pmd-bin-${VERSION}.zip
-	./pmd-bin-${VERSION}/bin/run.sh pmd -d $pwd/../repositories/spring-security -f html -R $pwd/../config/all-java.xml -r $pwd/../reports/$1.html
+	./pmd-bin-${VERSION}/bin/run.sh pmd -d $pwd/../repositories/spring-framework -f text -R $pwd/../config/all-java.xml -r $pwd/../reports/$1.txt
 	cd ../../
 }
 
 cd ../repositories
-getRepositories spring-security git https://github.com/spring-projects/spring-security
+getRepositories spring-framework git https://github.com/spring-projects/spring-framework
 getRepositories pmd git https://github.com/pmd/pmd
 
 #Demo to get pmd reports
 cd pmd
-git checkout HEAD
+git checkout master
 generateReport report-m
-git checkout HEAD^^
+git checkout pmd_releases/6.1.0
 generateReport report-p
-diff $pwd/../reports/report-m.html ../reports/report-p.html > $pwd/../report/diff.html
-
-#Demo to get repositories
-function getRepositories() {
-	if [ ! -d $1 ]; then
-		$2 clone $3
-	fi
-}
+diff $pwd/../reports/report-m.txt $pwd/../reports/report-p.txt > $pwd/../reports/diff.txt
 

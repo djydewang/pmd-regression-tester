@@ -4,3 +4,4 @@ repositories/
 #The directory used to store the reports.
 reports/
 
+.idea

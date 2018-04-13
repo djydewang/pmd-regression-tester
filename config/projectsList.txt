@@ -2,4 +2,4 @@
 # Format:
 # REPOSITORY_NAME|[git|hg]|REPOSITORY_URI|[COMMIT_ID]|[EXCLUDE PATTERN]
 
-pmd|git|https://github.com/pmd/pmd|pmd_releases/6.0.0||
+spring-framework|git|https://github.com/spring-projects/spring-framework|||

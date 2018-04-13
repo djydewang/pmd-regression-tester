@@ -5,3 +5,4 @@ repositories/
 reports/
 
 .idea
+pmd-bin-*

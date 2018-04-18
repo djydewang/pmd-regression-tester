@@ -137,6 +137,7 @@ def generate_html_report(project, diff)
             doc.h2(:a => "Violations:") {
               doc.text "Violations:"
             }
+            a_index = 1
             diff.each do |key, value|
               doc.div(:class => "section") {
                 doc.h3 key
@@ -153,10 +154,11 @@ def generate_html_report(project, diff)
                     value.each do |v|
                     doc.tr(:class => v.get_id == "base" ? "a" : "b") {
                       doc.td {
-                        doc.a(:name => "A1", :href => "#A1") {
-                          "#"
+                        doc.a(:name => "A#{a_index}", :href => "#A#{a_index}") {
+                          doc.text "#"
                         }
                       }
+                      a_index += 1
                       violation = v.get_violation
                       doc.td violation.attributes["priority"]
                       doc.td violation.attributes["rule"]
@@ -204,8 +206,32 @@ def diff_violations(base_violations, patch_violations)
       diff.push base_violations[i]
       i += 1
     elsif base_violations[i].equal?(patch_violations[j])
-      i += 1
-      j += 1
+      if base_violations[i].match?(patch_violations[j])
+        i += 1
+        j += 1
+      else
+        line = base_violations[i].get_line
+
+        base_i = i
+        while base_i < base_violations.size && base_violations[base_i].get_line == line
+          patch_j = j
+          is_different = true
+          while patch_j < patch_violations.size && patch_violations[patch_j].get_line == line
+            if base_violations[base_i].match?patch_violations[patch_j]
+              is_different = false
+              patch_violations.delete_at(patch_j)
+              break
+            end
+            patch_j += 1
+          end
+          if is_different
+            diff.push base_violations[base_i]
+          end
+          base_i += 1
+        end
+
+        i = base_i
+      end
     else
       diff.push patch_violations[j]
       j += 1
@@ -272,15 +298,22 @@ class Violation
     @id
   end
 
-  def equal?(violation)
+  def get_line
+    @violation.attributes["beginline"].to_i
+  end
+
+  def match?(violation)
     violation = violation.get_violation
     @violation.attributes["rule"].eql?(violation.attributes["rule"]) &&
         @violation.text.eql?(violation.text)
   end
 
+  def equal?(violation)
+    self.get_line == violation.get_line
+  end
+
   def less?(violation)
-    violation = violation.get_violation
-    @violation.attributes["beginline"].to_i < violation.attributes["beginline"].to_i
+    self.get_line < violation.get_line
   end
 end
 

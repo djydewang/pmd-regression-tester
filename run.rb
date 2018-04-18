@@ -165,7 +165,7 @@ def generate_html_report(project, diff)
                       doc.td violation.text
                       line = violation.attributes["beginline"]
                       doc.td {
-                        doc.a(:href => "xref#{key}.html/#L#{line}") {
+                        doc.a(:href => "xref#{key}.html#L#{line}") {
                           doc.text line
                         }
                       }

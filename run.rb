@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/ruby -w
 
 require "fileutils"
 require "nokogiri"
@@ -74,14 +74,10 @@ def generate_pmd_reports(branch_name, branch_config)
   version = get_pmd_binary_file branch_name
   $projects_list.each do |project|
 
-    if !File::exist?("repositories/#{project[0]}")
-      `#{project[1]} clone #{project[2]} repositories/#{project[0]}`
-    end
+    `#{project[1]} clone #{project[2]} repositories/#{project[0]}` unless File::exist?("repositories/#{project[0]}")
 
     branch_file = branch_name.delete("/")
-    if !File::directory?("reports/#{branch_file}")
-      Dir.mkdir("reports/#{branch_file}")
-    end
+    Dir.mkdir("reports/#{branch_file}") unless File::directory?("reports/#{branch_file}")
 
     generate_pmd_report version, "repositories/#{project[0]}", "xml", branch_config, "reports/#{branch_file}/#{project[0]}.xml"
   end
@@ -89,7 +85,7 @@ end
 
 def generate_xref_file(file_name, xref_dir)
   file_xref_dir = xref_dir + file_name.gsub(/[A-Za-z]*\.java/, "/")
-  FileUtils::mkdir_p(file_xref_dir) if !File.directory?(file_xref_dir)
+  FileUtils::mkdir_p(file_xref_dir) unless File.directory?(file_xref_dir)
   xref_file = File.new(xref_dir + file_name + ".html", "w")
 
   line_number = 1
@@ -117,8 +113,8 @@ def generate_html_report(project, diff)
   project_dir = "reports/diff/#{project[0]}"
   xref_dir = project_dir + "/xref"
 
-  Dir.mkdir xref_dir if !File::directory?(xref_dir)
-  Dir.mkdir(project_dir) if !File::directory?(project_dir)
+  Dir.mkdir xref_dir unless File::directory?(xref_dir)
+  Dir.mkdir(project_dir) unless File::directory?(project_dir)
   index = File.new("#{project_dir}/index.html", "w")
 
   builder = Nokogiri::HTML::Builder.new do |doc|
@@ -189,9 +185,7 @@ end
 def generate_diff_reports(base_branch, patch_branch)
   $projects_list.each do |project|
 
-    if !File::directory?("reports/diff")
-      Dir.mkdir("reports/diff")
-    end
+    Dir.mkdir("reports/diff") unless File::directory?("reports/diff")
 
     diff  = analysis_diffs "reports/#{base_branch}/#{project[0]}.xml", "reports/#{patch_branch.delete("/")}/#{project[0]}.xml"
     generate_html_report project, diff
@@ -318,6 +312,6 @@ class Violation
 end
 
 get_projects_list
-#generate_pmd_reports $cli_options[:baseBranch], $cli_options[:baseConfig]
-#generate_pmd_reports $cli_options[:patchBranch], $cli_options[:patchConfig]
+generate_pmd_reports $cli_options[:baseBranch], $cli_options[:baseConfig]
+generate_pmd_reports $cli_options[:patchBranch], $cli_options[:patchConfig]
 generate_diff_reports $cli_options[:baseBranch], $cli_options[:patchBranch]

@@ -312,6 +312,6 @@ class Violation
 end
 
 get_projects_list
-generate_pmd_reports $cli_options[:baseBranch], $cli_options[:baseConfig]
-generate_pmd_reports $cli_options[:patchBranch], $cli_options[:patchConfig]
-generate_diff_reports $cli_options[:baseBranch], $cli_options[:patchBranch]
+#generate_pmd_reports $cli_options[:baseBranch], $cli_options[:baseConfig]
+#generate_pmd_reports $cli_options[:patchBranch], $cli_options[:patchConfig]
+#generate_diff_reports $cli_options[:baseBranch], $cli_options[:patchBranch]

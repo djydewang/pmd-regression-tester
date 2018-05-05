@@ -1,0 +1,3 @@
+class ReportDetails
+  # TODO
+end
